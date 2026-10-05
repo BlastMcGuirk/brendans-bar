@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Drink {
+  id          Int         @id @default(autoincrement())
+  name        String      @db.VarChar(128)
+  description String?
+  glass       String?     @db.VarChar(32)
+  method      String?     @db.VarChar(32)
+  garnish     String?     @db.VarChar(64)
+  notes       String?
+  steps       String[]    @default([])
+  active      Boolean     @default(true)
+  type        String      @db.VarChar(32)
+  ingredients Ingredient[]
+  orderItems  OrderItem[]
+}
+
+model Ingredient {
+  id          Int         @id @default(autoincrement())
+  name        String      @db.VarChar(64)
+  amount      Float
+  unit        String      @db.VarChar(64)
+  drinkId     Int
+  type        String      @db.VarChar(32)
+  drink       Drink       @relation(fields: [drinkId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  guestName String      @db.VarChar(64)
+  note      String?     @db.VarChar(500)
+  status    String      @default("pending")
+  createdAt DateTime    @default(now()) @db.Timestamptz(3)
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id       Int    @id @default(autoincrement())
+  orderId  Int
+  drinkId  Int
+  quantity Int
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  drink    Drink  @relation(fields: [drinkId], references: [id])
+}
