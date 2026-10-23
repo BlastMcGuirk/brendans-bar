@@ -18,8 +18,16 @@ model Drink {
   steps       String[]    @default([])
   active      Boolean     @default(true)
   type        String      @db.VarChar(32)
+  menuSection String?     @db.VarChar(64)
+  section     MenuSection? @relation(fields: [menuSection], references: [name], onDelete: SetNull)
   ingredients Ingredient[]
   orderItems  OrderItem[]
+}
+
+model MenuSection {
+  name      String  @id @db.VarChar(64)
+  sortOrder Int     @default(0)
+  drinks    Drink[]
 }
 
 model Ingredient {

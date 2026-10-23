@@ -92,7 +92,29 @@ function OrdersPage() {
                     </time>
                   </div>
                   <ul className="ticket-items">
-                    {order.items.map((item) => <li key={item.id}><span className="ticket-quantity">{item.quantity}×</span><span>{item.drink.name}</span></li>)}
+                    {order.items.map((item) => (
+                      <li key={item.id}>
+                        <div className="ticket-item-title">
+                          <span className="ticket-quantity">{item.quantity}×</span>
+                          <strong>{item.drink.name}</strong>
+                        </div>
+                        <div className="ticket-recipe">
+                          {(item.drink.glass || item.drink.method || item.drink.garnish) && (
+                            <p>{[item.drink.glass, item.drink.method, item.drink.garnish && `Garnish: ${item.drink.garnish}`].filter(Boolean).join(' · ')}</p>
+                          )}
+                          {item.drink.ingredients.length > 0 && (
+                            <p><strong>INGREDIENTS</strong> {item.drink.ingredients.map((ingredient) => `${ingredient.amount} ${ingredient.unit} ${ingredient.name}`).join(' · ')}</p>
+                          )}
+                          {item.drink.steps.length > 0 && (
+                            <ol>{item.drink.steps.map((step, stepIndex) => <li key={`${item.id}-${stepIndex}`}>{step}</li>)}</ol>
+                          )}
+                          {item.drink.notes?.trim() && <p><strong>BAR NOTES</strong> {item.drink.notes}</p>}
+                          {item.drink.ingredients.length === 0 && item.drink.steps.length === 0 && !item.drink.glass && !item.drink.method && !item.drink.garnish && !item.drink.notes && (
+                            <p>Recipe details haven’t been added.</p>
+                          )}
+                        </div>
+                      </li>
+                    ))}
                   </ul>
                   {order.note?.trim() && <p className="ticket-note"><strong>NOTE</strong> {order.note}</p>}
                 </div>

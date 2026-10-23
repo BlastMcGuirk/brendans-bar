@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { request } from '../api'
 import PageFrame from '../components/PageFrame'
-import type { Drink } from '../types'
+import type { Drink, MenuSection } from '../types'
 
 function MenuPage() {
   const [drinks, setDrinks] = useState<Drink[]>([])
+  const [menuSections, setMenuSections] = useState<MenuSection[]>([])
   const [selected, setSelected] = useState<Record<number, number>>({})
   const [guestName, setGuestName] = useState('')
   const [note, setNote] = useState('')
@@ -15,21 +16,35 @@ function MenuPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    request<Drink[]>('/drinks')
-      .then(setDrinks)
+    Promise.all([request<Drink[]>('/drinks'), request<MenuSection[]>('/menu-sections')])
+      .then(([menuDrinks, sections]) => {
+        setDrinks(menuDrinks)
+        setMenuSections(sections)
+      })
       .catch((reason: Error) => setError(reason.message))
       .finally(() => setLoading(false))
   }, [])
 
   const selectedCount = Object.values(selected).reduce((sum, quantity) => sum + quantity, 0)
   const groupedDrinks = useMemo(() => {
-    const groups = new Map<string, Drink[]>()
+    const sectionsByName = new Map(menuSections.map((section) => [section.name, section]))
+    const groups = new Map<string, { label: string; sortOrder: number; drinks: Drink[] }>()
     for (const drink of drinks) {
-      const type = drink.type || 'other'
-      groups.set(type, [...(groups.get(type) ?? []), drink])
+      const section = drink.menuSection?.trim()
+      const key = section ? `section:${section}` : `type:${drink.type || 'Other'}`
+      const label = section || drink.type || 'Other'
+      const group = groups.get(key) ?? {
+        label,
+        sortOrder: sectionsByName.get(label)?.sortOrder ?? Number.MAX_SAFE_INTEGER,
+        drinks: [],
+      }
+      group.drinks.push(drink)
+      groups.set(key, group)
     }
-    return [...groups.entries()]
-  }, [drinks])
+    return [...groups.entries()].sort(([, first], [, second]) =>
+      first.sortOrder - second.sortOrder || first.label.localeCompare(second.label),
+    )
+  }, [drinks, menuSections])
 
   function setQuantity(drinkId: number, quantity: number) {
     setSelected((current) => {
@@ -93,18 +108,17 @@ function MenuPage() {
         ) : (
           <form onSubmit={submitOrder}>
             <div className="drink-groups">
-              {groupedDrinks.map(([type, group]) => (
-                <section className="drink-group" key={type}>
-                  <div className="group-label"><span>{type}</span><span className="group-count">{String(group.length).padStart(2, '0')}</span></div>
+              {groupedDrinks.map(([key, group]) => (
+                <section className="drink-group" key={key}>
+                  <div className="group-label"><span>{group.label}</span><span className="group-count">{String(group.drinks.length).padStart(2, '0')}</span></div>
                   <div className="drink-list">
-                    {group.map((drink) => (
+                    {group.drinks.map((drink) => (
                       <article className={`drink-row ${selected[drink.id] ? 'is-selected' : ''}`} key={drink.id}>
                         <label className="drink-info" htmlFor={`drink-${drink.id}`}>
                           <span className="drink-name">{drink.name}</span>
                           {drink.description && <span className="drink-description">{drink.description}</span>}
                           <span className="drink-ingredients">
                             {drink.ingredients.map((ingredient) => ingredient.name).join(' · ') || 'Ask us what’s in it'}
-                            {drink.garnish && ` · ${drink.garnish}`}
                           </span>
                         </label>
                         <div className="quantity-control" aria-label={`${drink.name} quantity`}>

@@ -320,9 +320,14 @@
 
 .drink-groups {
   display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 49px;
+}
+
+.drink-list {
+  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: 8%;
-  row-gap: 49px;
 }
 
 .group-label {
@@ -711,25 +716,60 @@
 }
 
 .ticket-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 22px;
+  display: grid;
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.ticket-items li {
-  display: flex;
-  gap: 8px;
+.ticket-items > li {
+  display: grid;
+  gap: 4px;
   color: var(--muted);
   font-family: var(--sans);
   font-size: 11px;
 }
 
+.ticket-item-title {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.ticket-item-title strong {
+  color: var(--ink);
+  font-weight: 650;
+}
+
 .ticket-quantity {
   color: var(--orange);
   font-weight: 700;
+}
+
+.ticket-recipe {
+  display: grid;
+  gap: 4px;
+  padding-left: 21px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.ticket-recipe p,
+.ticket-recipe ol {
+  margin: 0;
+}
+
+.ticket-recipe strong {
+  margin-right: 5px;
+  color: var(--green);
+  font-size: 8px;
+  letter-spacing: .8px;
+}
+
+.ticket-recipe ol {
+  padding-left: 16px;
 }
 
 .ticket-note {
@@ -916,6 +956,94 @@
 
 .danger-text {
   color: #aa4c38;
+}
+
+.menu-section-manager {
+  display: grid;
+  gap: 11px;
+  margin-top: 24px;
+  padding-top: 17px;
+  border-top: 1px solid var(--line);
+}
+
+.menu-section-list {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-section-list li,
+.menu-section-form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.menu-section-list li {
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 11px;
+}
+
+.menu-section-list li.is-dragging {
+  opacity: .45;
+}
+
+.section-drag-handle {
+  flex: 0 0 auto;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: grab;
+  font-family: var(--sans);
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: 1px;
+}
+
+.section-drag-handle:active {
+  cursor: grabbing;
+}
+
+.menu-section-name {
+  min-width: 0;
+  flex: 1;
+}
+
+.menu-section-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 9px;
+}
+
+.section-order-button {
+  font-size: 14px;
+}
+
+.menu-section-actions button:disabled {
+  color: #b3b3aa;
+  cursor: default;
+}
+
+.menu-section-form input {
+  min-width: 0;
+  flex: 1;
+  min-height: 34px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 10px;
+}
+
+.menu-section-form button {
+  flex: 0 0 auto;
 }
 
 .admin-form-section {
@@ -1322,10 +1450,6 @@
     padding: 54px 0 65px;
   }
 
-  .drink-groups {
-    column-gap: 5%;
-  }
-
   .drink-row {
     grid-template-columns: 17px minmax(0, 1fr) 76px;
     gap: 8px;
@@ -1526,6 +1650,10 @@
   .menu-page .drink-groups {
     grid-template-columns: 1fr;
     row-gap: 23px;
+  }
+
+  .menu-page .drink-list {
+    grid-template-columns: 1fr;
   }
 
   .menu-page .drink-row {

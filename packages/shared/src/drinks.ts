@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // 1. Enforce specific types via a TypeScript / Zod Enum
-export const DrinkTypeEnum = z.enum(['cocktail', 'mixed drink', 'beer', 'wine', 'other']);
+export const DrinkTypeEnum = z.enum(['Cocktail', 'Mixed drink', 'Beer', 'Wine', 'Other']);
 export type DrinkType = z.infer<typeof DrinkTypeEnum>;
 
 // 2. The Complete Drink Database Record Schema
@@ -16,6 +16,7 @@ export const DrinkSchema = z.object({
   steps: z.array(z.string()).default([]), // Maps to TEXT[]
   active: z.boolean().default(true),
   type: z.string().min(1, "Type is required").max(32),
+  menuSection: z.string().min(1).max(64).nullable().optional(),
 });
 
 // 3. The DTO used when creating or updating a drink (Database handles the ID)

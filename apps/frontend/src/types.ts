@@ -17,7 +17,13 @@ export type Drink = {
   steps: string[]
   active: boolean
   type: string
+  menuSection: string | null
   ingredients: Ingredient[]
+}
+
+export type MenuSection = {
+  name: string
+  sortOrder: number
 }
 
 export type Order = {
@@ -40,7 +46,8 @@ export const emptyDrink: DrinkForm = {
   notes: '',
   steps: [],
   active: true,
-  type: 'cocktail',
+  type: 'Cocktail',
+  menuSection: '',
   ingredients: [{ name: '', amount: 1, unit: 'oz', type: 'spirit' }],
 }
-export const drinkTypes = ['cocktail', 'mixed drink', 'beer', 'wine', 'other']
+export const drinkTypes = ['Cocktail', 'Mixed drink', 'Beer', 'Wine', 'Other']
